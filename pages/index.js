@@ -10,7 +10,7 @@ export default function Home() {
     "email": "rmillares@chapman.edu"
 
   })
-  const [gratitudes, setGratitudes] = useState (['sunsets','music','friendship'])
+  const [gratitudes, setGratitudes] = useState (['sunsets','music','friendship', 'pillows'])
 
   //const [gratitudes, setGratitudes] = useState (['rainfall', 'clouds', 'music', 'sunsets'])
   //let gratitudes = 
@@ -30,7 +30,7 @@ export default function Home() {
 
 
   return (
-    <div className="bg-gray-700 flex flex-col items-center min-h-screen py-2">
+    <div className="bg-blue-700 flex flex-col items-center min-h-screen py-2">
       <Head>
         <title>Gratitude Journal</title>
         <link rel="icon" href="/favicon.ico" />
@@ -39,7 +39,7 @@ export default function Home() {
       <main className="container mx-auto max-w-prose px-4 pt-12">
         <Greeting
           user = {user}
-          color = "text-pink-300"
+          color = "text-green-300"
           gratitudes = {gratitudes}
           hasSubmittedToday = {hasSubmittedToday}
           ></Greeting>
