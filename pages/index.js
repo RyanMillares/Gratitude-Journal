@@ -3,31 +3,18 @@ import Greeting from '../components/greeting'
 import History from '../components/History'
 import Input from '../components/Input'
 import { useState } from 'react'
+import GratitudeApp from "../components/GratitudeApp"
+import { Auth } from "@supabase/ui"
+
+import { supabase } from '../utils/supabaseClient'
 export default function Home() {
 
-  const [user, setUser] = useState ({
-    "name": "Ryan",
-    "email": "rmillares@chapman.edu"
-
-  })
-  const [gratitudes, setGratitudes] = useState (['sunsets','music','friendship', 'pillows'])
-
-  //const [gratitudes, setGratitudes] = useState (['rainfall', 'clouds', 'music', 'sunsets'])
-  //let gratitudes = 
-  //let gratitudes =  ['rainfall', 'clouds', 'music', 'sunsets']
-  const [hasSubmittedToday, setHasSubmitted] = useState(false)
-  //let hasSubmittedToday = true
-
-  const addGratitude = (entry) => {
-    let newGratitudes = [...gratitudes, entry]
-    setGratitudes(newGratitudes)
-    setHasSubmitted(true)
-
-  }
-  console.log(gratitudes)
+// gets logged in user from Auth.UserContextProvider
+// if no user is logged in, user will be null
+// uf a user is logged in, user will be an object with user info
 
 
-
+  const { user } = Auth.useUser()
 
   return (
     <div className="bg-blue-700 flex flex-col items-center min-h-screen py-2">
@@ -37,29 +24,17 @@ export default function Home() {
       </Head>
 
       <main className="container mx-auto max-w-prose px-4 pt-12">
-        <Greeting
-          user = {user}
-          color = "text-green-300"
-          gratitudes = {gratitudes}
-          hasSubmittedToday = {hasSubmittedToday}
-          ></Greeting>
-          <div className = "spacer"/>
-          <div className = "spacer"/>
-          {
-          !hasSubmittedToday && <Input handleSubmit = {addGratitude} />
-
-          }
-          {
-            gratitudes.length > 0 && 
-            <History 
-            gratitudes = {gratitudes}  
-            isFilled = {gratitudes.length > 0} //the && works already and ensures history won't run if empty, but this is a backup
-            />
-          }
-
-
-
-
+        {
+          // display app if user is logged in, otherwise show them the log in screen
+          user ? (
+            <GratitudeApp user = {user}/>
+          ) : (
+            <div className = "bg-white">
+              <Auth supabaseClient = {supabase} socialLayout = "horizontal" socialButtonSize = "xlarge" />
+            </div>
+          )
+        }
+        
         </main>
         <style jsx>
           {`
