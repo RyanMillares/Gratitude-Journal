@@ -1,31 +1,87 @@
 import Greeting from './greeting'
 import History from './History'
 import Input from './Input'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { supabase } from '../utils/supabaseClient'
-export default function Home() {
+import { data } from 'autoprefixer'
+export default function GratitudeApp({ user }) {
 
-  const [user, setUser] = useState ({
-    "name": "Ryan",
-    "email": "rmillares@chapman.edu"
 
-  })
-  const [gratitudes, setGratitudes] = useState (['sunsets','music','friendship', 'pillows'])
-
-  //const [gratitudes, setGratitudes] = useState (['rainfall', 'clouds', 'music', 'sunsets'])
-  //let gratitudes = 
-  //let gratitudes =  ['rainfall', 'clouds', 'music', 'sunsets']
+  const [gratitudes, setGratitudes] = useState ([])
   const [hasSubmittedToday, setHasSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   //let hasSubmittedToday = true
 
-  const addGratitude = (entry) => {
-    let newGratitudes = [...gratitudes, entry]
-    setGratitudes(newGratitudes)
-    setHasSubmitted(true)
+  useEffect(() => {
+    // run the fetchGratitudes() function
+    // after the initial render of the app
+    // so we have access to the logged in user
+    fetchGratitudes()
+  }, [])
+
+  const fetchGratitudes = async () => {
+    //get the gratitudes data from supabase
+    //set the value of gratitudes state to that data
+
+
+    let { data: gratitudes, error } = await supabase
+    .from('gratitudes')
+    .select('entry,date_insert_ts')
+
+    if (!error){
+
+      let currentTime = new Date().getTime()
+      
+      let mostRecentRecordTime = new Date(gratitudes.slice(-1)[0].date_insert_ts).getTime()
+      let hoursSincelastSubmission = (mostRecentRecordTime - currentTime) / 3600000
+      let didSubmitToday = hoursSincelastSubmission < 24  
+      setHasSubmitted(didSubmitToday)
+    
+      setGratitudes(gratitudes)
+      setLoading(false)
+
+    } else {
+      //there is an error
+      console.log(error)
+      setError(error)
+      setLoading(false)
+    }
+  }
+
+
+  const addGratitude = async (entry) => {
+    //let newGratitudes = [...gratitudes, entry]
+    //setGratitudes(newGratitudes)
+    //setHasSubmitted(true)
+    
+    const { data, error } = await supabase
+      .from('gratitudes')
+      .insert([
+    { id: user.id, entry: entry },
+    ])
+    setLoading(true)
+    if (error) { 
+      console.log(error) 
+      setError(error)
+    }
+    else {
+      setGratitudes([...gratitudes, {'entry': entry, 'date_insert_ts': null }])
+      setLoading(false)
+      setHasSubmitted(true)
+    }
 
   }
-  console.log(gratitudes)
+  /* Application is still fetching data */
+  if (loading) {
+    return <p>Loading...</p>
+  }
+  /* Something went wrong while fetching data */
+   if(error) {
+     return <p>{error}</p>
+   }
+  //console.log(gratitudes)
 
 
 
@@ -44,7 +100,7 @@ export default function Home() {
           <div className = "spacer"/>
           <div className = "spacer"/>
           {
-          !hasSubmittedToday && <Input handleSubmit = {addGratitude} />
+          !hasSubmittedToday && <Input defaultValue = "Enter gratitude" handleSubmit = {addGratitude} />
 
           }
           {

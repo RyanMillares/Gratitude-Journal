@@ -11,7 +11,7 @@ export default function Input({ handleSubmit }) {
 
     return (
         <form onSubmit = {submitForm}>
-            <input type = "text" value = {value} className = "rounded px-3 py-2 " onChange = {(e) => setValue(e.target.value)}>
+            <input type = "text" placeholder = "Enter text" value = {value} className = "rounded px-3 py-2 " onChange = {(e) => setValue(e.target.value)}>
 
             </input>
             <button type = "submit" className = "bg-green-500 rounded px-12 py-2">Save</button>

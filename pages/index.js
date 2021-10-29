@@ -1,8 +1,9 @@
-import Head from 'next/head'
+
 import Greeting from '../components/greeting'
 import History from '../components/History'
 import Input from '../components/Input'
 import { useState } from 'react'
+import Head from 'next/head'
 import GratitudeApp from "../components/GratitudeApp"
 import { Auth } from "@supabase/ui"
 
@@ -26,9 +27,15 @@ export default function Home() {
       <main className="container mx-auto max-w-prose px-4 pt-12">
         {
           // display app if user is logged in, otherwise show them the log in screen
-          user ? (
+          user ? (<div>
             <GratitudeApp user = {user}/>
-          ) : (
+            <button className = "text-pink-300" onClick = {async () => {
+              let {error} = await supabase.auth.signOut()
+              if(error){console.log(error)}
+            }}>
+              Logout
+            </button>
+          </div>) : (
             <div className = "bg-white">
               <Auth supabaseClient = {supabase} socialLayout = "horizontal" socialButtonSize = "xlarge" />
             </div>
