@@ -31,15 +31,16 @@ export default function GratitudeApp({ user }) {
     .select('entry,date_insert_ts')
 
     if (!error){
-
+      setGratitudes(gratitudes)
       let currentTime = new Date().getTime()
       
       let mostRecentRecordTime = new Date(gratitudes.slice(-1)[0].date_insert_ts).getTime()
-      let hoursSincelastSubmission = (mostRecentRecordTime - currentTime) / 3600000
-      let didSubmitToday = hoursSincelastSubmission < 24  
+      let hoursSincelastSubmission = (currentTime - mostRecentRecordTime) / 3600000
+      let didSubmitToday = hoursSincelastSubmission < 24 
+      console.log(hoursSincelastSubmission  )
       setHasSubmitted(didSubmitToday)
     
-      setGratitudes(gratitudes)
+
       setLoading(false)
 
     } else {
